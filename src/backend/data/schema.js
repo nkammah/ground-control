@@ -287,7 +287,8 @@ const GraphQLListContainer = new GraphQLObjectType({
 
         let events = await knex('bsd_events')
           .where('start_dt', '>=', new Date())
-          .where(filters)
+          .where('latitude', 0)
+          .where('longitude', 0)
           .limit(first)
           .orderBy(convertedSortField, sortDirection)
         return connectionFromArray(events, {first})
