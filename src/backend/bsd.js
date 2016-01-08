@@ -122,7 +122,7 @@ export default class BSD {
     return consObj;
   }
 
-  generateBSDURL(callPath, {params={}, paramsInBody=false}={}) {
+  generateBSDURL(callPath, {params={}, secure=false, paramsInBody=false}={}) {
     if (callPath[0] === '/')
       callPath = callPath.substring(1, callPath.length);
     callPath = url.resolve(this.baseURL.pathname, callPath)
@@ -136,7 +136,7 @@ export default class BSD {
     return url.format(finalURL);
   };
 
-  generateBSDParams({callPath, params, paramsInBody=false}) {
+  generateBSDParams({callPath, params, secure=false, paramsInBody=false}) {
     if (callPath[0] === '/')
       callPath = callPath.substring(1, callPath.length);
     callPath = url.resolve(this.baseURL.pathname, callPath)
