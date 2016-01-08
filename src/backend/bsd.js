@@ -122,7 +122,21 @@ export default class BSD {
     return consObj;
   }
 
-  generateBSDURL(callPath, {params={}, secure=false}={}) {
+  generateBSDURL(callPath, {params={}, paramsInBody=false}={}) {
+    if (callPath[0] === '/')
+      callPath = callPath.substring(1, callPath.length);
+    callPath = url.resolve(this.baseURL.pathname, callPath)
+
+    let finalURL = url.parse(url.resolve(url.format(this.baseURL), callPath));
+    finalURL.protocol = 'https:';
+
+    if (!paramsInBody) {
+      finalURL.search = '?' + this.generateBSDParams({callPath, params});
+    }
+    return url.format(finalURL);
+  };
+
+  generateBSDParams({callPath, params, paramsInBody=false}) {
     if (callPath[0] === '/')
       callPath = callPath.substring(1, callPath.length);
     callPath = url.resolve(this.baseURL.pathname, callPath)
@@ -153,13 +167,16 @@ export default class BSD {
     encryptedMessage.update(signingString);
     let apiMac = encryptedMessage.digest('hex');
     sortedParams.push({api_mac : apiMac});
-    let encodedQueryString = sortedParams.map((element) => {
-      return querystring.stringify(element)
-    }).join('&');
-    let finalURL = url.parse(url.resolve(url.format(this.baseURL), callPath));
-    finalURL.protocol = 'https:';
-    finalURL.search = '?' + encodedQueryString;
-    return url.format(finalURL);
+
+    if (paramsInBody){
+      return sortedParams
+    }
+    else {
+      let encodedQueryString = sortedParams.map((element) => {
+        return querystring.stringify(element)
+      }).join('&');
+      return encodedQueryString
+    }
   };
 
   async getConstituentGroup(groupId) {
